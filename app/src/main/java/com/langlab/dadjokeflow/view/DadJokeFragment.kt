@@ -1,17 +1,18 @@
 package com.langlab.dadjokeflow.view
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
+import androidx.lifecycle.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.langlab.dadjokeflow.R
 import com.langlab.dadjokeflow.databinding.DadJokeFragmentBinding
 import com.langlab.dadjokeflow.model.Joke
 import com.langlab.dadjokeflow.viewmodel.DadJokeViewModel
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class DadJokeFragment : Fragment(R.layout.dad_joke_fragment) {
     private lateinit var binding: DadJokeFragmentBinding
@@ -32,8 +33,9 @@ class DadJokeFragment : Fragment(R.layout.dad_joke_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupViewModel()
-        setupUI()
+        //setupViewModel()
+        //setupUI()
+        setupJokeFlow()
     }
 
     override fun onResume() {
@@ -54,8 +56,21 @@ class DadJokeFragment : Fragment(R.layout.dad_joke_fragment) {
         adapter = JokeListAdapter(viewModel.jokes.value ?: emptyList())
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = adapter
-        //binding.swipeRefreshLayout.setOnRefreshListener {
-        //    jokeViewModel.loadJokes(this@MainActivity)
-        //}
+    }
+
+    private fun setupJokeFlow() {
+        adapter = JokeListAdapter(emptyList())
+        binding.recyclerView.layoutManager = LinearLayoutManager(context)
+        binding.recyclerView.adapter = adapter
+
+        viewModel = ViewModelProvider(requireActivity()).get(DadJokeViewModel::class.java)
+        viewModel.fetchJokeFlow()
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.jokesFlow.collect {
+                    adapter.update(it)
+                }
+            }
+        }
     }
 }

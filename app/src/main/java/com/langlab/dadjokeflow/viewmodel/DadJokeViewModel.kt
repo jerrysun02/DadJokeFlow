@@ -9,6 +9,9 @@ import com.langlab.dadjokeflow.repository.DadJokeRepository
 import com.langlab.dadjokeflow.repository.RemoteResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -28,6 +31,18 @@ class DadJokeViewModel @Inject constructor(private val repository: DadJokeReposi
             if (result is RemoteResult.Success) {
                 _jokes.value = listOf(result.data)
             }
+        }
+    }
+
+    private val _jokesFlow = MutableStateFlow<List<Joke>>(emptyList())
+    val jokesFlow: StateFlow<List<Joke>> = _jokesFlow
+
+    fun fetchJokeFlow() {
+        viewModelScope.launch {
+            repository.latestJokes
+                .collect {
+                    _jokesFlow.value = it
+                }
         }
     }
 }
