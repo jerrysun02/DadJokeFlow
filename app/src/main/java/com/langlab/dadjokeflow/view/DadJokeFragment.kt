@@ -18,6 +18,7 @@ class DadJokeFragment : Fragment(R.layout.dad_joke_fragment) {
     private lateinit var binding: DadJokeFragmentBinding
     private lateinit var adapter: JokeListAdapter
     private lateinit var viewModel: DadJokeViewModel
+    private var jokeList = mutableListOf<Joke>()
 
     companion object {
         fun newInstance() = DadJokeFragment()
@@ -68,7 +69,10 @@ class DadJokeFragment : Fragment(R.layout.dad_joke_fragment) {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.jokesFlow.collect {
-                    adapter.update(it)
+                    if (it.isNotEmpty()) {
+                        jokeList.add(it[0])
+                        adapter.update(jokeList.asReversed())
+                    }
                 }
             }
         }
