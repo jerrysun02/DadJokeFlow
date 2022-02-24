@@ -1,4 +1,4 @@
-package com.langlab.dadjokeflow.repository
+package com.langlab.dadjokeflow.remote
 
 data class JokeResponse(
     val id: String?,

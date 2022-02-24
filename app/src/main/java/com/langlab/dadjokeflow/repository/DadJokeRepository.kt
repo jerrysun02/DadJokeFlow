@@ -1,6 +1,8 @@
 package com.langlab.dadjokeflow.repository
 
 import com.langlab.dadjokeflow.model.Joke
+import com.langlab.dadjokeflow.remote.RemoteApi
+import com.langlab.dadjokeflow.remote.RemoteResult
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -29,7 +31,7 @@ class DadJokeRepository @Inject constructor() {
                 val jokeResponse = it.body()
                 val joke = Joke(jokeResponse?.id, jokeResponse?.joke)
                 emit(listOf(joke))
-                delay(20 * 1000)
+                delay(120 * 1000)
             }
         }
     }

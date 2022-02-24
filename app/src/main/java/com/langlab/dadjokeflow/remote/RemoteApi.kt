@@ -1,4 +1,4 @@
-package com.langlab.dadjokeflow.repository
+package com.langlab.dadjokeflow.remote
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

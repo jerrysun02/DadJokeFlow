@@ -41,7 +41,7 @@ class DadJokeFragment : Fragment(R.layout.dad_joke_fragment) {
 
     override fun onResume() {
         super.onResume()
-        viewModel.fetchJokes()
+        //viewModel.fetchJokes()
     }
 
     private val showJokes = Observer<List<Joke>> {
@@ -64,13 +64,14 @@ class DadJokeFragment : Fragment(R.layout.dad_joke_fragment) {
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = adapter
 
-        viewModel = ViewModelProvider(requireActivity()).get(DadJokeViewModel::class.java)
-        viewModel.fetchJokeFlow()
+        viewModel = ViewModelProvider(requireActivity())[DadJokeViewModel::class.java]
+        viewModel.fetchJokeFlow(requireContext())
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.jokesFlow.collect {
                     if (it.isNotEmpty()) {
-                        jokeList.add(it[0])
+                        for (joke: Joke in it)
+                            jokeList.add(joke)
                         adapter.update(jokeList.asReversed())
                     }
                 }

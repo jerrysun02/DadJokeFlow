@@ -1,4 +1,4 @@
-package com.langlab.dadjokeflow.repository
+package com.langlab.dadjokeflow.remote
 
 sealed class RemoteResult<out T> {
     data class Success<T>(val data: T) : RemoteResult<T>()
