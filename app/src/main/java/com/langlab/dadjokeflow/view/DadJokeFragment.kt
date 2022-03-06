@@ -1,23 +1,27 @@
 package com.langlab.dadjokeflow.view
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.langlab.dadjokeflow.R
 import com.langlab.dadjokeflow.databinding.DadJokeFragmentBinding
 import com.langlab.dadjokeflow.model.Joke
 import com.langlab.dadjokeflow.viewmodel.DadJokeViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class DadJokeFragment : Fragment(R.layout.dad_joke_fragment) {
     private lateinit var binding: DadJokeFragmentBinding
     private lateinit var adapter: JokeListAdapter
-    private lateinit var viewModel: DadJokeViewModel
+    private val viewModel: DadJokeViewModel by viewModels()
     private var jokeList = mutableListOf<Joke>()
 
     companion object {
@@ -49,7 +53,6 @@ class DadJokeFragment : Fragment(R.layout.dad_joke_fragment) {
     }
 
     private fun setupViewModel() {
-        viewModel = ViewModelProvider(requireActivity()).get(DadJokeViewModel::class.java)
         viewModel.jokes.observe(viewLifecycleOwner, showJokes)
     }
 
@@ -59,13 +62,13 @@ class DadJokeFragment : Fragment(R.layout.dad_joke_fragment) {
         binding.recyclerView.adapter = adapter
     }
 
+    @SuppressLint("UnsafeRepeatOnLifecycleDetector")
     private fun setupJokeFlow() {
         adapter = JokeListAdapter(emptyList())
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = adapter
 
-        viewModel = ViewModelProvider(requireActivity())[DadJokeViewModel::class.java]
-        viewModel.fetchJokeFlow(requireContext())
+        viewModel.fetchJokeFlow()
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.jokesFlow.collect {

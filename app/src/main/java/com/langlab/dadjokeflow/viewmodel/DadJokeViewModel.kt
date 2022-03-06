@@ -6,11 +6,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.langlab.dadjokeflow.model.Joke
-import com.langlab.dadjokeflow.repository.DadJokeRepository
 import com.langlab.dadjokeflow.remote.RemoteResult
-import com.langlab.dadjokeflow.repository.JokeRepository
 import com.langlab.dadjokeflow.repository.JokeRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,6 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DadJokeViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     //private val repository: DadJokeRepository,
     private val newRepo: JokeRepositoryImpl
     ) : ViewModel() {
@@ -55,7 +55,7 @@ class DadJokeViewModel @Inject constructor(
     private val _jokesFlow = MutableStateFlow<List<Joke>>(emptyList())
     val jokesFlow: StateFlow<List<Joke>> = _jokesFlow
 
-    fun fetchJokeFlow(context: Context) {
+    fun fetchJokeFlow() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 _jokesFlow.value = newRepo.readLocalJokes(context)
